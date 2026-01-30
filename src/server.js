@@ -14,6 +14,8 @@ const onRequest = (request, response) => {
   const parsedUrl = new URL(request.url, `${protocol}://${request.headers.host}`)
   if(request.headers.accept) {request.acceptedTypes = request.headers.accept.split(',');}
 
+  request.query = Object.fromEntries(parsedUrl.searchParams);
+
   const handler = urlStruct[parsedUrl.pathname];
   if (handler) handler(request, response);
   else urlStruct.index(request, response);

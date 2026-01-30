@@ -26,9 +26,11 @@
   <script>
     const handleResponse = (response) => {
       response.text().then(resText => {
+
         const content = document.querySelector("#content");
         content.appendChild(document.createElement('hr'));
 
+        if(response.status === 200){
         const h1 = document.createElement('h1');
         const p = document.createElement('p');
         const h2 = document.createElement('h2');
@@ -51,10 +53,21 @@
         content.appendChild(p)
         content.appendChild(h2)
         content.appendChild(rawData)
+      }
+      else {
+        const resObj = JSON.parse(resText)
+          if(resObj.error) {
+            content.innerHTML += `<h2>Error! ${resObj.error}</h2>`
+          }
+        
+      }
       });
     }
 
     const sendFetchRequest = (url, acceptedType) => {
+      const catName = document.querySelector('#name').value;
+      url += `?name=${catName}`;
+
       const fetchPromise = fetch(url, {
         method: "GET",
         headers: {
@@ -82,6 +95,7 @@
 <body>
   <section id="top">
     <h1>Page 1 Fetch Requests</h1>
+    <input type="text" id="name"/>
     <button id="getCatsJSON">JSON</button>
     <button id="getCatsXML">XML</button>
   </section>
