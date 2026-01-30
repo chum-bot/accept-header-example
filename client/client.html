@@ -24,6 +24,36 @@
     }
   </style>
   <script>
+    const handleResponse = (response) => {
+      response.text().then(resText => {
+        const content = document.querySelector("#content");
+        content.appendChild(document.createElement('hr'));
+
+        const h1 = document.createElement('h1');
+        const p = document.createElement('p');
+        const h2 = document.createElement('h2');
+        const rawData = document.createElement('p');
+
+        const contentType = response.headers.get("Content-Type");
+        rawData.innerText = resText;
+        h2.innerText = contentType;
+
+        if(contentType === 'application/json'){
+          const parsed = JSON.parse(resText);
+          h1.innerText = `Name: ${parsed.name}`;
+          p.innerText = `Age: ${parsed.age}`;
+        } else if (contentType === 'text/xml') {
+          let parsedXML = new window.DOMParser().parseFromString(resText, 'text/xml')
+          h1.innerText = `Name: ${parsedXML.querySelector("name").textContent}`
+          p.innerText = `Age: ${parsedXML.querySelector("age").textContent}`
+        }
+        content.appendChild(h1)
+        content.appendChild(p)
+        content.appendChild(h2)
+        content.appendChild(rawData)
+      });
+    }
+
     const sendFetchRequest = (url, acceptedType) => {
       const fetchPromise = fetch(url, {
         method: "GET",
@@ -33,7 +63,7 @@
       })
 
       fetchPromise.then(response => {
-        console.log(response)
+        handleResponse(response)
       })
     };
 
